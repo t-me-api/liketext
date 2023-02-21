@@ -1,12 +1,12 @@
 import abc
-import html
 import re
+from html import escape
 from typing import Dict
 
 from .re import MD_QUOTE_PATTERN
 
 
-class TextDecoration(abc.ABC):
+class Text(abc.ABC):
     _decorations: Dict[str, str]
 
     def link(self, value: str, link: str) -> str:
@@ -54,7 +54,7 @@ class TextDecoration(abc.ABC):
         ...
 
 
-class HTMLDecoration(TextDecoration):
+class HTML(Text):
     _decorations: Dict[str, str] = {
         "link": '<a href="{link}">{value}</a>',
         "bold": "<b>{value}</b>",
@@ -69,10 +69,10 @@ class HTMLDecoration(TextDecoration):
     }
 
     def quote(self, value: str) -> str:
-        return html.escape(value, quote=False)
+        return escape(value, quote=False)
 
 
-class MDDecoration(TextDecoration):
+class MD(Text):
     _decorations: Dict[str, str] = {
         "link": "[{value}]({link})",
         "bold": "*{value}*",
@@ -90,5 +90,5 @@ class MDDecoration(TextDecoration):
         return re.sub(pattern=MD_QUOTE_PATTERN, repl=r"\\\1", string=value)
 
 
-html_decoration = HTMLDecoration()
-md_decoration = MDDecoration()
+html = HTML()
+md = MD()
